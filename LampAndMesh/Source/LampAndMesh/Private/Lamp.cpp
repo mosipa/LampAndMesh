@@ -12,7 +12,7 @@ ALamp::ALamp()
 	PrimaryActorTick.bCanEverTick = true;
 
 	PointLight = CreateDefaultSubobject<UPointLightComponent>(FName("Point Light"));
-	PointLight->LightColor = FColor::Red;
+	PointLight->LightColor = FColor::Yellow;
 	PointLight->bVisible = true;
 	
 	RootComponent = PointLight;
@@ -21,6 +21,11 @@ ALamp::ALamp()
 	PointLightSphere->InitSphereRadius(400.f);
 	PointLightSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 	PointLightSphere->AttachToComponent(PointLight, FAttachmentTransformRules::SnapToTargetIncludingScale);
+
+	Colors.Add(FColor::Red);
+	Colors.Add(FColor::Blue);
+	Colors.Add(FColor::Yellow);
+	ElNum = 0;
 }
 
 // Called when the game starts or when spawned
@@ -40,4 +45,17 @@ void ALamp::Tick(float DeltaTime)
 void ALamp::ToggleLight()
 {
 	PointLight->ToggleVisibility();
+}
+
+void ALamp::ChangeColor()
+{
+	PointLight->SetLightColor(Colors[ElNum]);
+	ElNum++;
+	ElNum = ElNum % Colors.Num();
+}
+
+void ALamp::TurnLightAndChangeColor()
+{
+	ToggleLight();
+	ChangeColor();
 }

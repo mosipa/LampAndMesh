@@ -30,11 +30,12 @@ AMyPawn::AMyPawn()
 
 	TriggerCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Trigger Capsule"));
 	TriggerCapsule->SetRelativeLocation(FVector(0.f, 0.f, 50.f));
-	TriggerCapsule->InitCapsuleSize(65.f, 96.f);
+	TriggerCapsule->InitCapsuleSize(50.f, 70.f);
 	TriggerCapsule->SetupAttachment(RootComponent);
 	TriggerCapsule->OnComponentBeginOverlap.AddDynamic(this, &AMyPawn::OnOverlapBegin);
 	TriggerCapsule->OnComponentEndOverlap.AddDynamic(this, &AMyPawn::OnOverlapEnd);
-	Lamp = NULL;
+	
+	Lamp = nullptr;
 }
 
 // Called when the game starts or when spawned
@@ -67,6 +68,10 @@ void AMyPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAxis("MoveY", this, &AMyPawn::MoveYAxis);
 
 	PlayerInputComponent->BindAction("TurnLight", IE_Pressed, this, &AMyPawn::TurnLight);
+
+	PlayerInputComponent->BindAction("ChangeColor", IE_Pressed, this, &AMyPawn::ChangeColor);
+
+	PlayerInputComponent->BindAction("TurnLightAndChangeColor", IE_Pressed, this, &AMyPawn::TurnLightAndChangeColor);
 }
 
 void AMyPawn::TurnLight()
@@ -77,13 +82,27 @@ void AMyPawn::TurnLight()
 	}
 }
 
+void AMyPawn::ChangeColor()
+{
+	if(Lamp)
+	{
+		Lamp->ChangeColor();
+	}
+}
+
+void AMyPawn::TurnLightAndChangeColor()
+{
+	if (Lamp)
+	{
+		Lamp->TurnLightAndChangeColor();
+	}
+}
+
 void AMyPawn::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherActor && (OtherActor != this) && OtherComp
 		&& OtherActor->GetClass()->IsChildOf<ALamp>())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("OtherActor: %s"), *(OtherActor->GetName()));
-		UE_LOG(LogTemp, Warning, TEXT("OtherComp: %s"), *(OtherComp->GetName()));
 		Lamp = Cast<ALamp>(OtherActor);
 	}
 }
@@ -92,7 +111,7 @@ void AMyPawn::OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AAct
 {
 	if (OtherActor && (OtherActor != this) && OtherComp)
 	{
-		Lamp = NULL;
+		Lamp = nullptr;
 	}
 }
 

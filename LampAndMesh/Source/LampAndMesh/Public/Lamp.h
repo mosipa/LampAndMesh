@@ -21,6 +21,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void ToggleLight();
+	void ChangeColor();
+	void TurnLightAndChangeColor();
 
 protected:
 	// Called when the game starts or when spawned
@@ -32,4 +34,8 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Light Setup")
 		USphereComponent* PointLightSphere = nullptr;
+
+	TArray<FColor> Colors;
+
+	int32 ElNum;
 };
