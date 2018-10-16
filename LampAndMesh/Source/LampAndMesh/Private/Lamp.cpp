@@ -3,6 +3,7 @@
 #include "Public/Lamp.h"
 #include "Components/PointLightComponent.h"
 #include "Components/SphereComponent.h"
+#include "Engine/World.h"
 
 // Sets default values
 ALamp::ALamp()
@@ -36,3 +37,7 @@ void ALamp::Tick(float DeltaTime)
 
 }
 
+void ALamp::ToggleLight()
+{
+	PointLight->ToggleVisibility();
+}
