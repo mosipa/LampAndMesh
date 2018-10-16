@@ -30,7 +30,4 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Light Setup")
 		USphereComponent* PointLightSphere = nullptr;
-
-	UPROPERTY(VisibleAnywhere, Category = "Light Setup")
-		float Intensity;
 };

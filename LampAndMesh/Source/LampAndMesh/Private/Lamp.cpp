@@ -10,11 +10,10 @@ ALamp::ALamp()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	Intensity = 5000.f;
-
 	PointLight = CreateDefaultSubobject<UPointLightComponent>(FName("Point Light"));
-	PointLight->Intensity = Intensity;
+	PointLight->LightColor = FColor::Red;
 	PointLight->bVisible = true;
+	
 	RootComponent = PointLight;
 
 	PointLightSphere = CreateDefaultSubobject<USphereComponent>(FName("Point Light Sphere"));
