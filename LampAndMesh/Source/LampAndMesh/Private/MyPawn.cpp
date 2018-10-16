@@ -9,6 +9,7 @@
 #include "Lamp.h"
 #include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
+#include "Projectile.h"
 
 // Sets default values
 AMyPawn::AMyPawn()
@@ -72,6 +73,14 @@ void AMyPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("ChangeColor", IE_Pressed, this, &AMyPawn::ChangeColor);
 
 	PlayerInputComponent->BindAction("TurnLightAndChangeColor", IE_Pressed, this, &AMyPawn::TurnLightAndChangeColor);
+
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AMyPawn::Fire);
+}
+
+void AMyPawn::Fire()
+{
+	auto Projectile = GetWorld()->SpawnActor<AProjectile>(GetActorLocation() + FVector(100.f, 0.f, 50.f), GetActorRotation());
+	Projectile->LaunchProjectile();
 }
 
 void AMyPawn::TurnLight()

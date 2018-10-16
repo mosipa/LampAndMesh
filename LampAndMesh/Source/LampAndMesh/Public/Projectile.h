@@ -6,6 +6,9 @@
 #include "GameFramework/Actor.h"
 #include "Projectile.generated.h"
 
+class UCapsuleComponent;
+class UProjectileMovementComponent;
+
 UCLASS()
 class LAMPANDMESH_API AProjectile : public AActor
 {
@@ -18,8 +21,15 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	void LaunchProjectile();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+private:
+	UPROPERTY(EditAnywhere)
+		UCapsuleComponent* CollisionMesh = nullptr;
+
+	UProjectileMovementComponent* ProjectileMovementComponent = nullptr;
 };
