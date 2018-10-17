@@ -8,6 +8,7 @@
 
 class UCapsuleComponent;
 class UProjectileMovementComponent;
+class URadialForceComponent;
 
 UCLASS()
 class LAMPANDMESH_API AProjectile : public AActor
@@ -41,4 +42,14 @@ private:
 	UMaterialInstanceDynamic* DynamicMaterialInst;
 
 	float ProjectileSpeed = 5000.f;
+
+	UPROPERTY(VisibleAnywhere, Category = Component)
+		URadialForceComponent* ExplosionForce = nullptr;
+
+	UFUNCTION()
+		void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
+
+	float DestroyDelay = 3.f;
+
+	void OnTimerExpire();
 };

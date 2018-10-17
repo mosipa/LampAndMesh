@@ -126,10 +126,10 @@ void AMyPawn::OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AAct
 
 void AMyPawn::MoveXAxis(float AxisValue)
 {
-	CurrentVelocity.X = FMath::Clamp<float>(AxisValue, -1.f, 1.f) * 100.f;
+	CurrentVelocity.X = FMath::Clamp<float>(AxisValue, -1.f, 1.f) * 500.f;
 }
 
 void AMyPawn::MoveYAxis(float AxisValue)
 {
-	CurrentVelocity.Y = FMath::Clamp<float>(AxisValue, -1.f, 1.f) * 100.f;
+	CurrentVelocity.Y = FMath::Clamp<float>(AxisValue, -1.f, 1.f) * 500.f;
 }
