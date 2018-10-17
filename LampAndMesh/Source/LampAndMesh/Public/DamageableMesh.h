@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "DamageableMesh.generated.h"
 
+class UDestructibleComponent;
+
 UCLASS()
 class LAMPANDMESH_API ADamageableMesh : public AActor
 {
@@ -25,7 +27,10 @@ protected:
 
 private:
 	UPROPERTY(VisibleAnywhere)
-		UStaticMeshComponent* Mesh;
+		UDestructibleComponent* Mesh;
 
 	float Health;
+
+	void ApplyDamage(float DamageAmount);
+	void Destroyed();
 };
