@@ -31,5 +31,14 @@ private:
 	UPROPERTY(EditAnywhere)
 		UCapsuleComponent* CollisionMesh = nullptr;
 
+	UPROPERTY(EditAnywhere)
+		UStaticMeshComponent* BaseMesh = nullptr;
+
 	UProjectileMovementComponent* ProjectileMovementComponent = nullptr;
+
+	UMaterial* StoredMaterial;
+
+	UMaterialInstanceDynamic* DynamicMaterialInst;
+
+	float ProjectileSpeed = 5000.f;
 };

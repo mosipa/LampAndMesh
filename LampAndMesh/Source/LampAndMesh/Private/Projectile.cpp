@@ -4,6 +4,9 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Public/DrawDebugHelpers.h"
+#include "Components/StaticMeshComponent.h"
+#include "UObject/ConstructorHelpers.h"
+#include "Materials/MaterialInstanceDynamic.h"
 
 // Sets default values
 AProjectile::AProjectile()
@@ -18,6 +21,27 @@ AProjectile::AProjectile()
 	CollisionMesh->InitCapsuleSize(25.f, 25.f);
 	RootComponent = Cast<USceneComponent>(CollisionMesh);
 	CollisionMesh->SetVisibility(true);
+
+	BaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(FName("Base Mesh"));
+	BaseMesh->SetupAttachment(RootComponent);
+
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> FoundMesh(TEXT("/Game/StarterContent/Shapes/Shape_Sphere"));
+
+	if (FoundMesh.Succeeded())
+	{
+		BaseMesh->SetStaticMesh(FoundMesh.Object);
+	}
+
+	static ConstructorHelpers::FObjectFinder<UMaterial> FoundMaterial(TEXT("/Game/Materials/M_Projectile"));
+
+	if (FoundMaterial.Succeeded())
+	{
+		StoredMaterial = FoundMaterial.Object;
+	}
+
+	DynamicMaterialInst = UMaterialInstanceDynamic::Create(StoredMaterial, BaseMesh);
+
+	BaseMesh->SetMaterial(0, DynamicMaterialInst);
 }
 
 // Called when the game starts or when spawned
@@ -35,9 +59,6 @@ void AProjectile::Tick(float DeltaTime)
 
 void AProjectile::LaunchProjectile()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Launching projectile"));
-
-	ProjectileMovementComponent->SetVelocityInLocalSpace(FVector::ForwardVector * 400.f);
-
+	ProjectileMovementComponent->SetVelocityInLocalSpace(FVector::ForwardVector * ProjectileSpeed);
 	ProjectileMovementComponent->Activate();
 }
