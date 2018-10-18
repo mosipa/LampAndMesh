@@ -33,4 +33,6 @@ private:
 
 	void ApplyDamage(float DamageAmount);
 	void Destroyed();
+
+	void SpawnCoins();
 };

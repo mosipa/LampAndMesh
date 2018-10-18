@@ -5,6 +5,8 @@
 #include "Engine/World.h"
 #include "DestructibleComponent.h"
 #include "DestructibleMesh.h"
+#include "Engine/World.h"
+#include "Coin.h"
 
 // Sets default values
 ADamageableMesh::ADamageableMesh()
@@ -36,7 +38,23 @@ float ADamageableMesh::TakeDamage(float DamageAmount, struct FDamageEvent const 
 {
 	UE_LOG(LogTemp, Warning, TEXT("Dmg TAKEN"));
 	ApplyDamage(DamageAmount);
+	SpawnCoins();
 	return DamageAmount;
+}
+
+void ADamageableMesh::SpawnCoins()
+{
+	float TSec = GetWorld()->GetTimeSeconds();
+	float XCord = this->GetActorLocation().X + 100.f * FMath::Sin(TSec);
+	float YCord = this->GetActorLocation().Y + 100.f * FMath::Cos(TSec);
+	float ZCord = this->GetActorLocation().Z;
+
+	FVector SpawnLocation = FVector(XCord, YCord, ZCord);
+
+	GetWorld()->SpawnActor<ACoin>(
+		SpawnLocation,
+		this->GetActorRotation()
+	);
 }
 
 void ADamageableMesh::ApplyDamage(float DamageAmount)
