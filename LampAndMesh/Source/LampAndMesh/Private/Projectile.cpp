@@ -46,6 +46,9 @@ AProjectile::AProjectile()
 
 	BaseMesh->SetMaterial(0, DynamicMaterialInst);
 
+	//Uncomment to make it invisible
+	//BaseMesh->SetVisibility(false);
+
 	ExplosionForce = CreateDefaultSubobject<URadialForceComponent>(FName("Explosion Force"));
 	ExplosionForce->SetupAttachment(RootComponent);
 }
@@ -79,7 +82,7 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 
 	UGameplayStatics::ApplyDamage(
 		OtherActor, 
-		10.f, 
+		ProjectileDamage,
 		GetWorld()->GetFirstPlayerController(), 
 		this, 
 		UDamageType::StaticClass()

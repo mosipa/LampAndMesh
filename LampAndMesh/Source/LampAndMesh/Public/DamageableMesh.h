@@ -31,8 +31,7 @@ private:
 
 	float Health;
 
-	void ApplyDamage(float DamageAmount);
-	void Destroyed();
+	void ApplyDamageToMesh(float DamageAmount);
 
 	void SpawnCoins();
 };

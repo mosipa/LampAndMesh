@@ -17,6 +17,7 @@ ADamageableMesh::ADamageableMesh()
 	Mesh = CreateDefaultSubobject<UDestructibleComponent>(FName("Mesh"));
 	Mesh->SetCollisionObjectType(ECollisionChannel::ECC_PhysicsBody);
 	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	RootComponent = Cast<USceneComponent>(Mesh);
 	Mesh->SetSimulatePhysics(true);
 	
 	Health = 50.f;
@@ -57,13 +58,8 @@ void ADamageableMesh::SpawnCoins()
 	);
 }
 
-void ADamageableMesh::ApplyDamage(float DamageAmount)
+void ADamageableMesh::ApplyDamageToMesh(float DamageAmount)
 {
 	Health -= DamageAmount;
-	if (Health == 0) { Destroyed(); }
-}
-
-void ADamageableMesh::Destroyed()
-{
-	this->Destroy();
+	if (Health == 0) { this->Destroy(); }
 }

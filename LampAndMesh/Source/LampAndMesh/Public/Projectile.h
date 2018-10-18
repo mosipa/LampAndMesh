@@ -42,6 +42,7 @@ private:
 	UMaterialInstanceDynamic* DynamicMaterialInst = nullptr;
 
 	float ProjectileSpeed = 5000.f;
+	float ProjectileDamage = 10.f;
 
 	UPROPERTY(VisibleAnywhere, Category = Component)
 		URadialForceComponent* ExplosionForce = nullptr;
