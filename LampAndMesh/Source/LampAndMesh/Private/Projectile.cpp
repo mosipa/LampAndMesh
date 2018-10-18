@@ -3,7 +3,6 @@
 #include "Projectile.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
-#include "Public/DrawDebugHelpers.h"
 #include "Components/StaticMeshComponent.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Materials/MaterialInstanceDynamic.h"
@@ -24,7 +23,7 @@ AProjectile::AProjectile()
 	CollisionMesh->InitCapsuleSize(25.f, 25.f);
 	RootComponent = Cast<USceneComponent>(CollisionMesh);
 	CollisionMesh->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Block);
-
+	
 	BaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(FName("Base Mesh"));
 	BaseMesh->SetupAttachment(RootComponent);
 

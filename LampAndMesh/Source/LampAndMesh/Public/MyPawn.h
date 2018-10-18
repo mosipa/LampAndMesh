@@ -9,6 +9,7 @@
 class UCapsuleComponent;
 class ALamp;
 class AProjectile;
+class ACoin;
 
 UCLASS()
 class LAMPANDMESH_API AMyPawn : public APawn
@@ -56,4 +57,6 @@ private:
 		UCapsuleComponent* TriggerCapsule = nullptr;
 
 	ALamp* Lamp;
+
+	ACoin* Coin;
 };

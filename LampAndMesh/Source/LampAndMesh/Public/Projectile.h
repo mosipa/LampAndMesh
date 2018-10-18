@@ -37,9 +37,9 @@ private:
 
 	UProjectileMovementComponent* ProjectileMovementComponent = nullptr;
 
-	UMaterial* StoredMaterial;
+	UMaterial* StoredMaterial = nullptr;
 
-	UMaterialInstanceDynamic* DynamicMaterialInst;
+	UMaterialInstanceDynamic* DynamicMaterialInst = nullptr;
 
 	float ProjectileSpeed = 5000.f;
 

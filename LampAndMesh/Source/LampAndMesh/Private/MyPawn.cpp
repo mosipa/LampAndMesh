@@ -10,6 +10,8 @@
 #include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
 #include "Projectile.h"
+#include "Coin.h"
+#include "Engine/Engine.h"
 
 // Sets default values
 AMyPawn::AMyPawn()
@@ -37,6 +39,7 @@ AMyPawn::AMyPawn()
 	TriggerCapsule->OnComponentEndOverlap.AddDynamic(this, &AMyPawn::OnOverlapEnd);
 	
 	Lamp = nullptr;
+	Coin = nullptr;
 }
 
 // Called when the game starts or when spawned
@@ -113,6 +116,17 @@ void AMyPawn::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AA
 		&& OtherActor->GetClass()->IsChildOf<ALamp>())
 	{
 		Lamp = Cast<ALamp>(OtherActor);
+	}
+
+	if (OtherActor && (OtherActor != this) && OtherComp
+		&& OtherActor->GetClass()->IsChildOf<ACoin>())
+	{
+		Coin = Cast<ACoin>(OtherActor);
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Colleceted coin."));
+		}
+		Coin->DestroyCollected();
 	}
 }
 
