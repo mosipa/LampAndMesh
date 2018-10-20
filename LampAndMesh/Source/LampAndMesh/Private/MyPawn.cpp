@@ -12,6 +12,9 @@
 #include "Projectile.h"
 #include "Coin.h"
 #include "Engine/Engine.h"
+#include "GameFramework/PlayerStart.h"
+#include "UObject/ConstructorHelpers.h"
+#include "Materials/MaterialInstanceDynamic.h"
 
 // Sets default values
 AMyPawn::AMyPawn()
@@ -19,7 +22,7 @@ AMyPawn::AMyPawn()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	AutoPossessPlayer = EAutoReceiveInput::Player0;
+	AutoPossessPlayer = EAutoReceiveInput::Disabled;
 
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root Component"));
 
@@ -38,6 +41,25 @@ AMyPawn::AMyPawn()
 	TriggerCapsule->OnComponentBeginOverlap.AddDynamic(this, &AMyPawn::OnOverlapBegin);
 	TriggerCapsule->OnComponentEndOverlap.AddDynamic(this, &AMyPawn::OnOverlapEnd);
 	
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> FoundMesh(TEXT("/Game/StarterContent/Shapes/Shape_Cube"));
+
+	if (FoundMesh.Succeeded())
+	{
+		Cast<UStaticMeshComponent>(PawnMesh)->SetStaticMesh(FoundMesh.Object);
+		PawnMesh->SetRelativeScale3D(FVector(1.f, 1.f, 1.f));
+	}
+
+	static ConstructorHelpers::FObjectFinder<UMaterial> FoundMaterial(TEXT("/Game/Materials/M_Pawn"));
+
+	if (FoundMaterial.Succeeded())
+	{
+		StoredMaterial = FoundMaterial.Object;
+	}
+
+	DynamicMaterialInst = UMaterialInstanceDynamic::Create(StoredMaterial, PawnMesh);
+
+	Cast<UStaticMeshComponent>(PawnMesh)->SetMaterial(0, DynamicMaterialInst);
+
 	Lamp = nullptr;
 	Coin = nullptr;
 }
@@ -46,7 +68,6 @@ AMyPawn::AMyPawn()
 void AMyPawn::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
@@ -60,7 +81,6 @@ void AMyPawn::Tick(float DeltaTime)
 		SetActorLocation(NewLocation);
 	}
 }
-
 
 // Called to bind functionality to input
 void AMyPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

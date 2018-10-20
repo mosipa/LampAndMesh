@@ -10,6 +10,7 @@ class UCapsuleComponent;
 class ALamp;
 class AProjectile;
 class ACoin;
+class UMaterial;
 
 UCLASS()
 class LAMPANDMESH_API AMyPawn : public APawn
@@ -59,4 +60,8 @@ private:
 	ALamp* Lamp;
 
 	ACoin* Coin;
+
+	UMaterial* StoredMaterial = nullptr;
+
+	UMaterialInstanceDynamic* DynamicMaterialInst = nullptr;
 };

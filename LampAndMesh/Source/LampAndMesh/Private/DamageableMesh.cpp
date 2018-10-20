@@ -38,7 +38,7 @@ void ADamageableMesh::Tick(float DeltaTime)
 float ADamageableMesh::TakeDamage(float DamageAmount, struct FDamageEvent const & DamageEvent, class AController * EventInstigator, AActor * DamageCauser)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Dmg TAKEN"));
-	ApplyDamage(DamageAmount);
+	ApplyDamageToMesh(DamageAmount);
 	SpawnCoins();
 	return DamageAmount;
 }
