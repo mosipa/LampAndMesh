@@ -26,6 +26,9 @@ ALamp::ALamp()
 	Colors.Add(FColor::Blue);
 	Colors.Add(FColor::Yellow);
 	ElNum = 0;
+
+	bReplicates = true;
+	bAlwaysRelevant = true;
 }
 
 // Called when the game starts or when spawned

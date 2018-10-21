@@ -27,12 +27,48 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	void MoveXAxis(float AxisValue);
-	void MoveYAxis(float AxisValue);
+
+	UFUNCTION()
+		void MoveXAxis(float AxisValue);
+
+	UFUNCTION(Server, Reliable, WithValidation)
+		void ServerMoveXAxis(float AxisValue, FRotator Rotation);
+		void ServerMoveXAxis_Implementation(float AxisValue, FRotator Rotation);
+		bool ServerMoveXAxis_Validate(float AxisValue, FRotator Rotation);
+
+	UFUNCTION()
+		void MoveYAxis(float AxisValue);
+
+	UFUNCTION(Server, Reliable, WithValidation)
+		void ServerMoveYAxis(float AxisValue, FRotator Rotation);
+		void ServerMoveYAxis_Implementation(float AxisValue, FRotator Rotation);
+		bool ServerMoveYAxis_Validate(float AxisValue, FRotator Rotation);
+
+	UPROPERTY(Transient, ReplicatedUsing = OnRep_PosChange)
+		FVector CurrentPosition;
+
+	UPROPERTY(Transient, ReplicatedUsing = OnRep_RotChange)
+		FRotator CurrentRotation;
+
+	UFUNCTION()
+		void OnRep_PosChange();
+
+	UFUNCTION()
+		void OnRep_RotChange();
 
 	FVector CurrentVelocity;
 
-	void TurnLight();
+	/*UFUNCTION(Reliable, NetMulticast, WithValidation)
+		void TurnLight();
+		void TurnLight_Implementation();
+		bool TurnLight_Validate();
+
+	UFUNCTION(Reliable, Server, WithValidation)
+		void Server_TurnLight();
+		void Server_TurnLight_Implementation();
+		bool Server_TurnLight_Validate();
+		(
+	*/void TurnLight();
 
 	void ChangeColor();
 

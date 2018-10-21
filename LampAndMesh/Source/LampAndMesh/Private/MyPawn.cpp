@@ -15,13 +15,15 @@
 #include "GameFramework/PlayerStart.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Materials/MaterialInstanceDynamic.h"
-
+#include "Runtime/Networking/Public/Networking.h"
+#include "UnrealNetwork.h"
+#include "Engine.h"
 // Sets default values
 AMyPawn::AMyPawn()
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	
 	AutoPossessPlayer = EAutoReceiveInput::Disabled;
 
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root Component"));
@@ -62,6 +64,9 @@ AMyPawn::AMyPawn()
 
 	Lamp = nullptr;
 	Coin = nullptr;
+
+	bReplicates = true;
+	bReplicateMovement = true;
 }
 
 // Called when the game starts or when spawned
@@ -74,12 +79,22 @@ void AMyPawn::BeginPlay()
 void AMyPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
 	if (!CurrentVelocity.IsZero())
 	{
 		FVector NewLocation = GetActorLocation() + (CurrentVelocity * DeltaTime);
 		SetActorLocation(NewLocation);
 	}
+}
+
+void AMyPawn::OnRep_PosChange()
+{
+	SetActorLocation(CurrentPosition);
+}
+
+void AMyPawn::OnRep_RotChange()
+{
+	SetActorRotation(CurrentRotation);
 }
 
 // Called to bind functionality to input
@@ -113,7 +128,36 @@ void AMyPawn::TurnLight()
 		Lamp->ToggleLight();
 	}
 }
+/*
+void AMyPawn::TurnLight_Implementation()
+{
+	if (!HasAuthority())
+	{
+		Server_TurnLight();
+	}
 
+	if (Lamp)
+	{
+		Lamp->ToggleLight();
+	}
+
+}
+
+void AMyPawn::Server_TurnLight_Implementation()
+{
+	TurnLight();
+}
+
+bool AMyPawn::Server_TurnLight_Validate()
+{
+	return true;
+}
+
+bool AMyPawn::TurnLight_Validate()
+{
+	return true;
+}
+*/
 void AMyPawn::ChangeColor()
 {
 	if(Lamp)
@@ -160,10 +204,52 @@ void AMyPawn::OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AAct
 
 void AMyPawn::MoveXAxis(float AxisValue)
 {
+	if (Role != ROLE_Authority && IsLocallyControlled())
+	{
+		ServerMoveXAxis(AxisValue, Controller->GetControlRotation());
+	}
 	CurrentVelocity.X = FMath::Clamp<float>(AxisValue, -1.f, 1.f) * 500.f;
+}
+
+bool AMyPawn::ServerMoveXAxis_Validate(float AxisValue, FRotator Rotation)
+{
+	return true;
+}
+
+void AMyPawn::ServerMoveXAxis_Implementation(float AxisValue, FRotator Rotation)
+{
+	CurrentVelocity.X = FMath::Clamp<float>(AxisValue, -1.f, 1.f) * 500.f;
+	SetActorRotation(Rotation);
+	CurrentRotation = Rotation;
+	SetActorLocation(GetActorLocation());
+	CurrentPosition = GetActorLocation();
+}
+
+void AMyPawn::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AMyPawn, CurrentPosition);
+	DOREPLIFETIME(AMyPawn, CurrentRotation);
 }
 
 void AMyPawn::MoveYAxis(float AxisValue)
 {
+	if (Role != ROLE_Authority && IsLocallyControlled())
+	{
+		ServerMoveYAxis(AxisValue, Controller->GetControlRotation());
+	}
 	CurrentVelocity.Y = FMath::Clamp<float>(AxisValue, -1.f, 1.f) * 500.f;
+}
+
+void AMyPawn::ServerMoveYAxis_Implementation(float AxisValue, FRotator Rotation)
+{
+	CurrentVelocity.Y = FMath::Clamp<float>(AxisValue, -1.f, 1.f) * 500.f;
+	SetActorRotation(Rotation);
+	CurrentRotation = Rotation;
+	SetActorLocation(GetActorLocation());
+	CurrentPosition = GetActorLocation();
+}
+
+bool AMyPawn::ServerMoveYAxis_Validate(float AxisValue, FRotator Rotation)
+{
+	return true;
 }
