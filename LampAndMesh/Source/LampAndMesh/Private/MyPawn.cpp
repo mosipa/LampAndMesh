@@ -123,41 +123,39 @@ void AMyPawn::Fire()
 
 void AMyPawn::TurnLight()
 {
-	if (Lamp)
+	if (HasAuthority())
 	{
-		Lamp->ToggleLight();
+		ClientTurnLight();
+	}
+	else
+	{
+		ServerTurnLight();
 	}
 }
-/*
-void AMyPawn::TurnLight_Implementation()
-{
-	if (!HasAuthority())
-	{
-		Server_TurnLight();
-	}
 
-	if (Lamp)
-	{
-		Lamp->ToggleLight();
-	}
-
-}
-
-void AMyPawn::Server_TurnLight_Implementation()
+void AMyPawn::ServerTurnLight_Implementation()
 {
 	TurnLight();
 }
 
-bool AMyPawn::Server_TurnLight_Validate()
+bool AMyPawn::ServerTurnLight_Validate()
 {
 	return true;
 }
 
-bool AMyPawn::TurnLight_Validate()
+void AMyPawn::ClientTurnLight_Implementation()
+{
+	if (Lamp)
+	{
+		Lamp->ToggleLight();
+	}
+}
+
+bool AMyPawn::ClientTurnLight_Validate()
 {
 	return true;
 }
-*/
+
 void AMyPawn::ChangeColor()
 {
 	if(Lamp)

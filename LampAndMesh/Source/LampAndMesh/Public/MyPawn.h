@@ -58,17 +58,18 @@ public:
 
 	FVector CurrentVelocity;
 
-	/*UFUNCTION(Reliable, NetMulticast, WithValidation)
+	UFUNCTION()
 		void TurnLight();
-		void TurnLight_Implementation();
-		bool TurnLight_Validate();
 
-	UFUNCTION(Reliable, Server, WithValidation)
-		void Server_TurnLight();
-		void Server_TurnLight_Implementation();
-		bool Server_TurnLight_Validate();
-		(
-	*/void TurnLight();
+	UFUNCTION(Server, Reliable, WithValidation)
+		void ServerTurnLight();
+		void ServerTurnLight_Implementation();
+		bool ServerTurnLight_Validate();
+
+	UFUNCTION(NetMulticast, Reliable, WithValidation)
+		void ClientTurnLight();
+		void ClientTurnLight_Implementation();
+		bool ClientTurnLight_Validate();
 
 	void ChangeColor();
 
@@ -93,9 +94,9 @@ private:
 	UPROPERTY(EditAnywhere)
 		UCapsuleComponent* TriggerCapsule = nullptr;
 
-	ALamp* Lamp;
-
 	ACoin* Coin;
+
+	ALamp* Lamp;
 
 	UMaterial* StoredMaterial = nullptr;
 
