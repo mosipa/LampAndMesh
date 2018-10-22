@@ -27,17 +27,14 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-
-	UFUNCTION()
-		void MoveXAxis(float AxisValue);
+	void MoveXAxis(float AxisValue);
 
 	UFUNCTION(Server, Reliable, WithValidation)
 		void ServerMoveXAxis(float AxisValue, FRotator Rotation);
 		void ServerMoveXAxis_Implementation(float AxisValue, FRotator Rotation);
 		bool ServerMoveXAxis_Validate(float AxisValue, FRotator Rotation);
-
-	UFUNCTION()
-		void MoveYAxis(float AxisValue);
+	
+	void MoveYAxis(float AxisValue);
 
 	UFUNCTION(Server, Reliable, WithValidation)
 		void ServerMoveYAxis(float AxisValue, FRotator Rotation);
@@ -58,8 +55,7 @@ public:
 
 	FVector CurrentVelocity;
 
-	UFUNCTION()
-		void TurnLight();
+	void TurnLight();
 
 	UFUNCTION(Server, Reliable, WithValidation)
 		void ServerTurnLight();
@@ -96,6 +92,28 @@ public:
 		bool ClientTurnLightAndChangeColor_Validate();
 
 	void Fire();
+
+	UFUNCTION(Server, Reliable, WithValidation)
+		void ServerFire();
+		void ServerFire_Implementation();
+		bool ServerFire_Validate();
+
+	UFUNCTION(NetMulticast, Reliable, WithValidation)
+		void ClientFire();
+		void ClientFire_Implementation();
+		bool ClientFire_Validate();
+
+	void CollectAndDestroy();
+
+	UFUNCTION(Server, Reliable, WithValidation)
+		void ServerCollectAndDestroy();
+		void ServerCollectAndDestroy_Implementation();
+		bool ServerCollectAndDestroy_Validate();
+
+	UFUNCTION(NetMulticast, Reliable, WithValidation)
+		void ClientCollectAndDestroy();
+		void ClientCollectAndDestroy_Implementation();
+		bool ClientCollectAndDestroy_Validate();
 
 	UFUNCTION()
 		void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

@@ -21,6 +21,8 @@ ADamageableMesh::ADamageableMesh()
 	Mesh->SetSimulatePhysics(true);
 	
 	Health = 50.f;
+
+	bReplicates = true;
 }
 
 // Called when the game starts or when spawned
@@ -45,6 +47,40 @@ float ADamageableMesh::TakeDamage(float DamageAmount, struct FDamageEvent const 
 
 void ADamageableMesh::SpawnCoins()
 {
+	if (HasAuthority())
+	{
+		ClientSpawnCoins();
+	}
+	else
+	{
+		ServerSpawnCoins();
+	}
+	/*
+	float TSec = GetWorld()->GetTimeSeconds();
+	float XCord = this->GetActorLocation().X + 100.f * FMath::Sin(TSec);
+	float YCord = this->GetActorLocation().Y + 100.f * FMath::Cos(TSec);
+	float ZCord = this->GetActorLocation().Z;
+
+	FVector SpawnLocation = FVector(XCord, YCord, ZCord);
+
+	GetWorld()->SpawnActor<ACoin>(
+		SpawnLocation,
+		this->GetActorRotation()
+	);*/
+}
+
+void ADamageableMesh::ServerSpawnCoins_Implementation()
+{
+	SpawnCoins();
+}
+
+bool ADamageableMesh::ServerSpawnCoins_Validate()
+{
+	return true;
+}
+
+void ADamageableMesh::ClientSpawnCoins_Implementation()
+{
 	float TSec = GetWorld()->GetTimeSeconds();
 	float XCord = this->GetActorLocation().X + 100.f * FMath::Sin(TSec);
 	float YCord = this->GetActorLocation().Y + 100.f * FMath::Cos(TSec);
@@ -56,6 +92,11 @@ void ADamageableMesh::SpawnCoins()
 		SpawnLocation,
 		this->GetActorRotation()
 	);
+}
+
+bool ADamageableMesh::ClientSpawnCoins_Validate()
+{
+	return true;
 }
 
 void ADamageableMesh::ApplyDamageToMesh(float DamageAmount)

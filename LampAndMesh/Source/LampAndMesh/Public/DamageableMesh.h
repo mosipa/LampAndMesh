@@ -34,4 +34,14 @@ private:
 	void ApplyDamageToMesh(float DamageAmount);
 
 	void SpawnCoins();
+	
+	UFUNCTION(Server, Reliable, WithValidation)
+		void ServerSpawnCoins();
+		void ServerSpawnCoins_Implementation();
+		bool ServerSpawnCoins_Validate();
+
+	UFUNCTION(NetMulticast, Reliable, WithValidation)
+		void ClientSpawnCoins();
+		void ClientSpawnCoins_Implementation();
+		bool ClientSpawnCoins_Validate();
 };

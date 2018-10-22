@@ -117,8 +117,35 @@ void AMyPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AMyPawn::Fire()
 {
+	if (HasAuthority())
+	{
+		ClientFire();
+	}
+	else
+	{
+		ServerFire();
+	}
+}
+
+void AMyPawn::ServerFire_Implementation()
+{
+	Fire();
+}
+
+bool AMyPawn::ServerFire_Validate()
+{
+	return true;
+}
+
+void AMyPawn::ClientFire_Implementation()
+{
 	auto Projectile = GetWorld()->SpawnActor<AProjectile>(GetActorLocation() + FVector(100.f, 0.f, 50.f), GetActorRotation());
 	Projectile->LaunchProjectile();
+}
+
+bool AMyPawn::ClientFire_Validate()
+{
+	return true;
 }
 
 void AMyPawn::TurnLight()
@@ -238,12 +265,48 @@ void AMyPawn::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AA
 		&& OtherActor->GetClass()->IsChildOf<ACoin>())
 	{
 		Coin = Cast<ACoin>(OtherActor);
+		CollectAndDestroy();
+		//Coin->DestroyCollected();
+	}
+}
+
+void AMyPawn::CollectAndDestroy()
+{
+	if (HasAuthority())
+	{
+		ClientCollectAndDestroy();
+	}
+	else
+	{
+		ServerCollectAndDestroy();
+	}
+}
+
+void AMyPawn::ServerCollectAndDestroy_Implementation()
+{
+	CollectAndDestroy();
+}
+
+bool AMyPawn::ServerCollectAndDestroy_Validate()
+{
+	return true;
+}
+
+void AMyPawn::ClientCollectAndDestroy_Implementation()
+{
+	if (Coin)
+	{
+		Coin->DestroyCollected();
 		if (GEngine)
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Colleceted coin."));
 		}
-		Coin->DestroyCollected();
 	}
+}
+
+bool AMyPawn::ClientCollectAndDestroy_Validate()
+{
+	return true;
 }
 
 void AMyPawn::OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)

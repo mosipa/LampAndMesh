@@ -47,7 +47,7 @@ AProjectile::AProjectile()
 	BaseMesh->SetMaterial(0, DynamicMaterialInst);
 
 	//Comment to make it visible
-	BaseMesh->SetVisibility(false);
+	//BaseMesh->SetVisibility(false);
 
 	ExplosionForce = CreateDefaultSubobject<URadialForceComponent>(FName("Explosion Force"));
 	ExplosionForce->SetupAttachment(RootComponent);
