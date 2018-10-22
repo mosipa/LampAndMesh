@@ -193,10 +193,37 @@ bool AMyPawn::ClientChangeColor_Validate()
 
 void AMyPawn::TurnLightAndChangeColor()
 {
+	if (HasAuthority())
+	{
+		ClientTurnLightAndChangeColor();
+	}
+	else
+	{
+		ServerTurnLightAndChangeColor();
+	}
+}
+
+void AMyPawn::ServerTurnLightAndChangeColor_Implementation()
+{
+	TurnLightAndChangeColor();
+}
+
+bool AMyPawn::ServerTurnLightAndChangeColor_Validate()
+{
+	return true;
+}
+
+void AMyPawn::ClientTurnLightAndChangeColor_Implementation()
+{
 	if (Lamp)
 	{
 		Lamp->TurnLightAndChangeColor();
 	}
+}
+
+bool AMyPawn::ClientTurnLightAndChangeColor_Validate()
+{
+	return true;
 }
 
 void AMyPawn::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
