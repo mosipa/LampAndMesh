@@ -158,10 +158,37 @@ bool AMyPawn::ClientTurnLight_Validate()
 
 void AMyPawn::ChangeColor()
 {
-	if(Lamp)
+	if (HasAuthority())
+	{
+		ClientChangeColor();
+	}
+	else
+	{
+		ServerChangeColor();
+	}
+}
+
+void AMyPawn::ServerChangeColor_Implementation()
+{
+	ChangeColor();
+}
+
+bool AMyPawn::ServerChangeColor_Validate()
+{
+	return true;
+}
+
+void AMyPawn::ClientChangeColor_Implementation()
+{
+	if (Lamp)
 	{
 		Lamp->ChangeColor();
 	}
+}
+
+bool AMyPawn::ClientChangeColor_Validate()
+{
+	return true;
 }
 
 void AMyPawn::TurnLightAndChangeColor()

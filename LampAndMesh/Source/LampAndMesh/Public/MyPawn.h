@@ -73,6 +73,16 @@ public:
 
 	void ChangeColor();
 
+	UFUNCTION(Server, Reliable, WithValidation)
+		void ServerChangeColor();
+		void ServerChangeColor_Implementation();
+		bool ServerChangeColor_Validate();
+
+	UFUNCTION(NetMulticast, Reliable, WithValidation)
+		void ClientChangeColor();
+		void ClientChangeColor_Implementation();
+		bool ClientChangeColor_Validate();
+
 	void TurnLightAndChangeColor();
 
 	void Fire();
