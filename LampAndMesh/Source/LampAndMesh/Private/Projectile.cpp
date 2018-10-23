@@ -27,7 +27,7 @@ AProjectile::AProjectile()
 	BaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(FName("Base Mesh"));
 	BaseMesh->SetupAttachment(RootComponent);
 
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> FoundMesh(TEXT("/Game/StarterContent/Shapes/Shape_Sphere"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> FoundMesh(TEXT("/Game/Props/Shape_Sphere"));
 
 	if (FoundMesh.Succeeded())
 	{

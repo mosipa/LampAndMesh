@@ -21,7 +21,7 @@ ACoin::ACoin()
 	BaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(FName("Base Mesh"));
 	BaseMesh->SetupAttachment(RootComponent);
 
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> FoundMesh(TEXT("/Game/StarterContent/Shapes/Shape_NarrowCapsule"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> FoundMesh(TEXT("/Game/Props/Shape_NarrowCapsule"));
 
 	if (FoundMesh.Succeeded())
 	{
