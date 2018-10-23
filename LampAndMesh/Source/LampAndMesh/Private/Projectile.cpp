@@ -47,10 +47,12 @@ AProjectile::AProjectile()
 	BaseMesh->SetMaterial(0, DynamicMaterialInst);
 
 	//Comment to make it visible
-	//BaseMesh->SetVisibility(false);
+	BaseMesh->SetVisibility(false);
 
 	ExplosionForce = CreateDefaultSubobject<URadialForceComponent>(FName("Explosion Force"));
 	ExplosionForce->SetupAttachment(RootComponent);
+
+	bReplicateMovement = true;
 }
 
 // Called when the game starts or when spawned
@@ -71,12 +73,14 @@ void AProjectile::LaunchProjectile()
 {
 	ProjectileMovementComponent->SetVelocityInLocalSpace(FVector::ForwardVector * ProjectileSpeed);
 	ProjectileMovementComponent->Activate();
+
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AProjectile::OnTimerExpire, DestroyDelay, false);
 }
 
 void AProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
 {
 	ExplosionForce->FireImpulse();
-
 	SetRootComponent(ExplosionForce);
 	CollisionMesh->DestroyComponent();
 
@@ -87,12 +91,9 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 		this, 
 		UDamageType::StaticClass()
 	);
-
-	FTimerHandle TimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AProjectile::OnTimerExpire, DestroyDelay, false);
 }
 
 void AProjectile::OnTimerExpire()
 {
-	Destroy();
+	this->Destroy();
 }

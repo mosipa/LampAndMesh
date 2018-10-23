@@ -23,6 +23,7 @@ ADamageableMesh::ADamageableMesh()
 	Health = 50.f;
 
 	bReplicates = true;
+	bReplicateMovement = true;
 }
 
 // Called when the game starts or when spawned
@@ -39,34 +40,23 @@ void ADamageableMesh::Tick(float DeltaTime)
 
 float ADamageableMesh::TakeDamage(float DamageAmount, struct FDamageEvent const & DamageEvent, class AController * EventInstigator, AActor * DamageCauser)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Dmg TAKEN"));
 	ApplyDamageToMesh(DamageAmount);
 	SpawnCoins();
 	return DamageAmount;
 }
 
+#pragma region SpawnCoins
+//After taking damage coins are spawn near mesh
 void ADamageableMesh::SpawnCoins()
 {
-	if (HasAuthority())
+	if (Role == ROLE_Authority)
 	{
 		ClientSpawnCoins();
 	}
-	else
+	else if (Role == ROLE_AutonomousProxy)
 	{
 		ServerSpawnCoins();
 	}
-	/*
-	float TSec = GetWorld()->GetTimeSeconds();
-	float XCord = this->GetActorLocation().X + 100.f * FMath::Sin(TSec);
-	float YCord = this->GetActorLocation().Y + 100.f * FMath::Cos(TSec);
-	float ZCord = this->GetActorLocation().Z;
-
-	FVector SpawnLocation = FVector(XCord, YCord, ZCord);
-
-	GetWorld()->SpawnActor<ACoin>(
-		SpawnLocation,
-		this->GetActorRotation()
-	);*/
 }
 
 void ADamageableMesh::ServerSpawnCoins_Implementation()
@@ -81,16 +71,18 @@ bool ADamageableMesh::ServerSpawnCoins_Validate()
 
 void ADamageableMesh::ClientSpawnCoins_Implementation()
 {
+	
 	float TSec = GetWorld()->GetTimeSeconds();
 	float XCord = this->GetActorLocation().X + 100.f * FMath::Sin(TSec);
 	float YCord = this->GetActorLocation().Y + 100.f * FMath::Cos(TSec);
 	float ZCord = this->GetActorLocation().Z;
 
-	FVector SpawnLocation = FVector(XCord, YCord, ZCord);
+	FVector CoinSpawnLocation = FVector(XCord, YCord, ZCord);
+	FRotator CoinSpawnRotation = this->GetActorRotation();
 
 	GetWorld()->SpawnActor<ACoin>(
-		SpawnLocation,
-		this->GetActorRotation()
+		CoinSpawnLocation,
+		CoinSpawnRotation
 	);
 }
 
@@ -98,6 +90,7 @@ bool ADamageableMesh::ClientSpawnCoins_Validate()
 {
 	return true;
 }
+#pragma endregion
 
 void ADamageableMesh::ApplyDamageToMesh(float DamageAmount)
 {

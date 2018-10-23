@@ -40,8 +40,9 @@ private:
 		void ServerSpawnCoins_Implementation();
 		bool ServerSpawnCoins_Validate();
 
-	UFUNCTION(NetMulticast, Reliable, WithValidation)
+	UFUNCTION(Client, Reliable, WithValidation)
 		void ClientSpawnCoins();
 		void ClientSpawnCoins_Implementation();
 		bool ClientSpawnCoins_Validate();
+		
 };

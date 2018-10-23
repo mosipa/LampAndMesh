@@ -30,10 +30,10 @@ protected:
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Light Setup")
-		UPointLightComponent* PointLight = nullptr;
+		UPointLightComponent* PointLight;
 
 	UPROPERTY(VisibleAnywhere, Category = "Light Setup")
-		USphereComponent* PointLightSphere = nullptr;
+		USphereComponent* PointLightSphere;
 
 	TArray<FColor> Colors;
 

@@ -127,16 +127,16 @@ protected:
 
 private:
 	UPROPERTY(EditAnywhere)
-		USceneComponent* PawnMesh = nullptr;
+		USceneComponent* PawnMesh;
 
 	UPROPERTY(EditAnywhere)
-		UCapsuleComponent* TriggerCapsule = nullptr;
+		UCapsuleComponent* TriggerCapsule;
 
 	ACoin* Coin;
 
 	ALamp* Lamp;
 
-	UMaterial* StoredMaterial = nullptr;
+	UMaterial* StoredMaterial;
 
-	UMaterialInstanceDynamic* DynamicMaterialInst = nullptr;
+	UMaterialInstanceDynamic* DynamicMaterialInst;
 };

@@ -17,13 +17,13 @@
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Runtime/Networking/Public/Networking.h"
 #include "UnrealNetwork.h"
-#include "Engine.h"
+
 // Sets default values
 AMyPawn::AMyPawn()
 {
- 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	
+
 	AutoPossessPlayer = EAutoReceiveInput::Disabled;
 
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root Component"));
@@ -32,7 +32,7 @@ AMyPawn::AMyPawn()
 	Camera->SetupAttachment(RootComponent);
 	Camera->SetRelativeLocation(FVector(-250.f, 0.f, 250.f));
 	Camera->SetRelativeRotation(FRotator(-25.f, 0.f, 0.f));
-	
+
 	PawnMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Pawn Mesh"));
 	PawnMesh->SetupAttachment(RootComponent);
 
@@ -42,7 +42,7 @@ AMyPawn::AMyPawn()
 	TriggerCapsule->SetupAttachment(RootComponent);
 	TriggerCapsule->OnComponentBeginOverlap.AddDynamic(this, &AMyPawn::OnOverlapBegin);
 	TriggerCapsule->OnComponentEndOverlap.AddDynamic(this, &AMyPawn::OnOverlapEnd);
-	
+
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> FoundMesh(TEXT("/Game/StarterContent/Shapes/Shape_Cube"));
 
 	if (FoundMesh.Succeeded())
@@ -73,6 +73,9 @@ AMyPawn::AMyPawn()
 void AMyPawn::BeginPlay()
 {
 	Super::BeginPlay();
+
+	//set StartPosition
+	RootComponent->SetWorldLocationAndRotation(FVector(-720, 0, 0), FRotator(0, 0, 0));
 }
 
 // Called every frame
@@ -85,16 +88,6 @@ void AMyPawn::Tick(float DeltaTime)
 		FVector NewLocation = GetActorLocation() + (CurrentVelocity * DeltaTime);
 		SetActorLocation(NewLocation);
 	}
-}
-
-void AMyPawn::OnRep_PosChange()
-{
-	SetActorLocation(CurrentPosition);
-}
-
-void AMyPawn::OnRep_RotChange()
-{
-	SetActorRotation(CurrentRotation);
 }
 
 // Called to bind functionality to input
@@ -115,6 +108,8 @@ void AMyPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AMyPawn::Fire);
 }
 
+#pragma region Fire
+//Firing projectile that damages mesh
 void AMyPawn::Fire()
 {
 	if (HasAuthority())
@@ -147,7 +142,10 @@ bool AMyPawn::ClientFire_Validate()
 {
 	return true;
 }
+#pragma endregion
 
+#pragma region TurnLight
+//Turning On/Off lamp
 void AMyPawn::TurnLight()
 {
 	if (HasAuthority())
@@ -182,7 +180,10 @@ bool AMyPawn::ClientTurnLight_Validate()
 {
 	return true;
 }
+#pragma endregion
 
+#pragma region ChangeColor
+//Changing lamp light color
 void AMyPawn::ChangeColor()
 {
 	if (HasAuthority())
@@ -217,7 +218,10 @@ bool AMyPawn::ClientChangeColor_Validate()
 {
 	return true;
 }
+#pragma endregion
 
+#pragma region TurnLight and ChangeColor
+//Turning On/Off lamp and changing its light color
 void AMyPawn::TurnLightAndChangeColor()
 {
 	if (HasAuthority())
@@ -252,7 +256,9 @@ bool AMyPawn::ClientTurnLightAndChangeColor_Validate()
 {
 	return true;
 }
+#pragma endregion
 
+#pragma region Pawn Overlap Event
 void AMyPawn::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherActor && (OtherActor != this) && OtherComp
@@ -266,10 +272,20 @@ void AMyPawn::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AA
 	{
 		Coin = Cast<ACoin>(OtherActor);
 		CollectAndDestroy();
-		//Coin->DestroyCollected();
 	}
 }
 
+void AMyPawn::OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (OtherActor && (OtherActor != this) && OtherComp)
+	{
+		Lamp = nullptr;
+	}
+}
+
+#pragma endregion
+
+#pragma region Collecting Coins
 void AMyPawn::CollectAndDestroy()
 {
 	if (HasAuthority())
@@ -297,10 +313,6 @@ void AMyPawn::ClientCollectAndDestroy_Implementation()
 	if (Coin)
 	{
 		Coin->DestroyCollected();
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Colleceted coin."));
-		}
 	}
 }
 
@@ -308,15 +320,9 @@ bool AMyPawn::ClientCollectAndDestroy_Validate()
 {
 	return true;
 }
+#pragma endregion
 
-void AMyPawn::OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	if (OtherActor && (OtherActor != this) && OtherComp)
-	{
-		Lamp = nullptr;
-	}
-}
-
+#pragma region Action: Movement X and Y
 void AMyPawn::MoveXAxis(float AxisValue)
 {
 	if (Role != ROLE_Authority && IsLocallyControlled())
@@ -338,6 +344,16 @@ void AMyPawn::ServerMoveXAxis_Implementation(float AxisValue, FRotator Rotation)
 	CurrentRotation = Rotation;
 	SetActorLocation(GetActorLocation());
 	CurrentPosition = GetActorLocation();
+}
+
+void AMyPawn::OnRep_PosChange()
+{
+	SetActorLocation(CurrentPosition);
+}
+
+void AMyPawn::OnRep_RotChange()
+{
+	SetActorRotation(CurrentRotation);
 }
 
 void AMyPawn::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &OutLifetimeProps) const {
@@ -368,3 +384,4 @@ bool AMyPawn::ServerMoveYAxis_Validate(float AxisValue, FRotator Rotation)
 {
 	return true;
 }
+#pragma endregion

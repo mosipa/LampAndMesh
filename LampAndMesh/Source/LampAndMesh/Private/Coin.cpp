@@ -5,6 +5,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Materials/MaterialInstanceDynamic.h"
+#include "Engine.h"
 
 // Sets default values
 ACoin::ACoin()
@@ -39,9 +40,15 @@ ACoin::ACoin()
 	DynamicMaterialInst = UMaterialInstanceDynamic::Create(StoredMaterial, BaseMesh);
 
 	BaseMesh->SetMaterial(0, DynamicMaterialInst);
+
+	bReplicates = true;
 }
 
 void ACoin::DestroyCollected()
 {
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Colleceted coin."));
+	}
 	this->Destroy();
 }
